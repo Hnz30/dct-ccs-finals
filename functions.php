@@ -45,19 +45,31 @@ function validateStudentData($data) {
     return $errors;
 }
 
-// Example function to check for duplicate student data
-function checkDuplicateStudentData($student_data) {
-    // For example, assume we check an array in the session
-    // This would need to be replaced with database queries in a real app
-    if (!empty($_SESSION['student_data'])) {
-        foreach ($_SESSION['student_data'] as $existing_student) {
-            if ($existing_student['student_id'] == $student_data['student_id']) {
-                return true; // Duplicate student ID found
-            }
-        }
+function checkDuplicateStudentData($student_id, $conn) {
+    // Ensure student_id is a string
+    if (!is_string($student_id)) {
+        return ["Invalid Student ID format."];
     }
-    return false; // No duplicate found
+
+    // Query to check if student_id already exists
+    $query = "SELECT COUNT(*) AS count FROM students WHERE student_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $student_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    // Fetch the count
+    $row = $result->fetch_assoc();
+    $stmt->close();
+
+    // Return an error if a duplicate is found
+    if ($row['count'] > 0) {
+        return ["Student ID already exists in the database."];
+    }
+
+    return []; // No errors
 }
+
 // Update student data
 function updateStudentData($index, $student_data) {
     // Check if the student data is valid (you can add further validation here if needed)
@@ -75,4 +87,16 @@ function getSelectedStudentData($index) {
     }
     return null;  // Return null if student is not found
 }
+// Function to display errors
+function displayErrors($errors) {
+    $errorHtml = '<div class="alert alert-danger">';
+    $errorHtml .= '<ul>';
+    foreach ($errors as $error) {
+        $errorHtml .= '<li>' . htmlspecialchars($error) . '</li>';
+    }
+    $errorHtml .= '</ul>';
+    $errorHtml .= '</div>';
+    return $errorHtml;
+}
+
 
