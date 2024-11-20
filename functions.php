@@ -179,6 +179,49 @@ function updateSubject($subject_code, $subject_name, $redirect) {
         echo "<p class='text-danger'>Failed to update the subject. Please try again.</p>";
     }
 }
+function updateSubjectGrade($student_id, $subject_id, $grade, $redirect_url) {
+    $conn = dbConnect();
+    
+    // Prepare the SQL query to update the grade
+    $query = "UPDATE grades SET grade = ? WHERE student_id = ? AND subject_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("dii", $grade, $student_id, $subject_id); // "d" for double, "ii" for integers
+    $stmt->execute();
+    
+    if ($stmt->affected_rows > 0) {
+        // Redirect after successful update
+        header("Location: $redirect_url");
+        exit;
+    } else {
+        // Handle errors (e.g., if no rows were affected)
+        echo "<p class='text-danger'>Failed to assign grade. Please try again.</p>";
+    }
+    
+    $stmt->close();
+    $conn->close();
+}
+function getStudentById($student_id) {
+    $conn = dbConnect();  // Establish a database connection
+    
+    // Query to fetch student details by student_id
+    $query = "SELECT * FROM students WHERE student_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $student_id);  // "i" is for integer type
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        return $result->fetch_assoc();  // Return student data as an associative array
+    } else {
+        return null;  // Return null if no student found
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+
+
 
 
 
