@@ -95,6 +95,7 @@ if (isset($_GET['student_id'])) {
                         <td>
                             <!-- Detach Subject Button -->
                             <a href="detach-subject.php?subject_id=<?= urlencode($subject['subject_id']) ?>&student_id=<?= $student_data['student_id'] ?>" class="btn btn-danger btn-sm">Detach Subject</a>
+
                             <!-- Assign Grade Button -->
                             <a href="assign-grade.php?subject_id=<?= urlencode($subject['subject_id']) ?>&student_id=<?= $student_data['student_id'] ?>" class="btn btn-success btn-sm">Assign Grade</a>
                         </td>
