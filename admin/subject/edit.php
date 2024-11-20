@@ -1,4 +1,5 @@
 <?php
+ob_start(); // Start output buffering
 include '../../functions.php'; // Include the functions
 include '../partials/header.php';
 
@@ -57,4 +58,5 @@ $subject_data = getSubjectByCode($_GET['subject_code']);
 
 <?php
 include '../partials/footer.php';
+ob_end_flush(); // End output buffering and send the content to the browser
 ?>

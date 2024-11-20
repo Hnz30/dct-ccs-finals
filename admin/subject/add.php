@@ -1,90 +1,104 @@
 <?php
-include '../../functions.php'; // Include the functions
-include '../partials/header.php';
+session_start();
 
-$logoutPage = '../logout.php';
-$dashboardPage = '../dashboard.php';
-$studentPage = '../student/register.php';
+// Check if the user is logged in
+if (!isset($_SESSION['user'])) {
+    header("Location: ../index.php");
+    exit();
+}
+
+include '../../functions.php'; // Include your functions file
+include '../partials/header.php'; // Include header here
 include '../partials/side-bar.php';
+
+// Handle the form submission to add a new subject
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Get form data
+    $subject_code = postData('subject_code'); // Sanitize input data
+    $subject_name = postData('subject_name');
+
+    // Validate form inputs
+    if ($subject_code && $subject_name) {
+        // Insert the subject into the database
+        $conn = dbConnect();
+        $query = "INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ss", $subject_code, $subject_name);
+
+        if ($stmt->execute()) {
+            $success_message = "Subject added successfully!";
+        } else {
+            $error_message = "Failed to add subject.";
+        }
+        
+        $stmt->close();
+        $conn->close();
+    } else {
+        $error_message = "Please fill in both fields.";
+    }
+}
 ?>
 
-   
-       
-       
-        <!-- Content Area -->
-        <div class="col-md-9 col-lg-10">
-        <h3 class="text-left mb-5 mt-5">Add A New Subject</h1>
-            <!-- Breadcrumb -->
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item" aria-current="page"><a href="../dashboard.php">Dashboard</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Add Subject</li>
-                </ol>
-            </nav>
+<!-- Template Files here -->
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
+    <h1 class="h2">Add a New Subject</h1>        
 
-            <?php
-            if(isPost()){
-                $subject_code = postData("subject_code");
-                $subject_name = postData("subject_name");
-                addSubject($subject_code, $subject_name);
-            }
+    <?php if (isset($success_message)) echo "<div class='alert alert-success'>$success_message</div>"; ?>
+    <?php if (isset($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>
 
-            ?>
-            
-
-            <!-- Add Subject Form -->
-            <div class="card p-4 mb-5">
-                <form method="POST">
-                    <div class="mb-3">
-                        <label for="subject_code" class="form-label">Subject Code</label>
-                        <input type="text" class="form-control" id="subject_code" name="subject_code">
-                    </div>
-                    <div class="mb-3">
-                        <label for="subject_name" class="form-label">Subject Name</label>
-                        <input type="text" class="form-control" id="subject_name" name="subject_name">
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-sm w-100">Add Subject</button>
-                </form>
+    <div class="row mt-5">
+        <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
+            <!-- Floating Label for Subject Code -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control bg-light" id="subject_code" name="subject_code" placeholder="Subject Code" required>
+                <label for="subject_code">Subject Code</label>
             </div>
 
-            <!-- Subject List Table -->
-            <div class="card p-4">
-                <h3 class="card-title text-center">Subject List</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Subject Code</th>
-                            <th>Subject Name</th>
-                            <th>Options</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php $subjects = fetchSubjects();  if (!empty($subjects)): ?>
-                    <?php foreach ($subjects as $subject): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($subject['subject_code']) ?></td>
-                            <td><?= htmlspecialchars($subject['subject_name']) ?></td>
-                            <td>
-                                <!-- Edit Button (Green) -->
-                                <a href="edit.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-primary btn-sm">Edit</a>
+            <!-- Floating Label for Subject Name -->
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control bg-light" id="subject_name" name="subject_name" placeholder="Subject Name" required>
+                <label for="subject_name">Subject Name</label>
+            </div>
 
-                                <!-- Delete Button (Red) -->
-                                <a href="delete.php?subject_code=<?= urlencode($subject['subject_code']) ?>" class="btn btn-danger btn-sm">Delete</a>
+            <button type="submit" class="btn btn-primary w-100">Add Subject</button>
+        </form>
+
+        <!-- List of Registered Subjects from Database -->             
+        <div class="border border-secondary-1 p-5">
+            <h5>Subject List</h5>
+            <hr>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Subject Code</th>
+                        <th>Subject Name</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Fetch subjects from the database using the fetchSubjects function
+                    $subjects = fetchSubjects();
+                    foreach ($subjects as $subject):
+                    ?>
+                        <tr>
+                            <td><?= htmlspecialchars($subject['subject_code']); ?></td>
+                            <td><?= htmlspecialchars($subject['subject_name']); ?></td>
+                            <td>
+                                <!-- Edit Button -->
+                                <a href="edit.php?subject_code=<?= $subject['subject_code']; ?>" class="btn btn-info btn-sm">Edit</a>
+
+                                <!-- Delete Button -->
+                                <a href="delete.php?subject_code=<?= $subject['subject_code']; ?>" class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                <?php else: ?>
-                    <tr>
-                        <td colspan="3" class="text-center">No subjects found.</td>
-                    </tr>
-                <?php endif; ?>
                     </tbody>
                 </table>
             </div>
-        </div>
-
-
+    </div>    
+</main>
 
 <?php
-include '../partials/footer.php';
+include '../partials/footer.php'; // Include footer here
 ?>
