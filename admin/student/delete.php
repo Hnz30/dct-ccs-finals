@@ -62,13 +62,13 @@ ob_end_flush(); // Flush the output buffer to the browser
 
 <?php include '../partials/header.php'; // Include header ?>
 <?php include '../partials/side-bar.php'; // Include sidebar ?>
+<div class="col-md-9 col-lg-10">
 
-<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">
-    <h1 class="h2">Delete a Student</h1>
+<h3 class="text-left mb-5 mt-5">Delete a Student</h3>
 
     <!-- Breadcrumbs Section -->
     <div class="w-100 mt-1">
-        <div class="border border-secondary-1 p-10 mb-4">
+        <div class="border border-secondary-1 p-10 mb-1">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>

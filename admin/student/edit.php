@@ -62,7 +62,7 @@ ob_end_flush(); // Flush the output buffer to the browser
 
         <!-- Breadcrumbs Section -->
         <div class="w-100 mt-1">
-        <div class="border border-secondary-1 p-10 mb-4">
+        <div class="border border-secondary-1 p-10 mb-1">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>

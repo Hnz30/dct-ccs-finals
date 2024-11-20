@@ -98,5 +98,135 @@ function displayErrors($errors) {
     $errorHtml .= '</div>';
     return $errorHtml;
 }
+// Check if the request method is POST
+function isPost() {
+    return $_SERVER['REQUEST_METHOD'] === 'POST';
+}
+// Fetch all subjects from the database
+function fetchSubjects() {
+    $conn = dbConnect(); // Use your database connection function
+    $subjects = [];
+    $result = $conn->query("SELECT * FROM subjects");
+
+    if ($result && $result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $subjects[] = $row;
+        }
+    }
+
+    $conn->close();
+    return $subjects;
+}
+// Retrieve and sanitize POST data
+function postData($key) {
+    return isset($_POST[$key]) ? htmlspecialchars(trim($_POST[$key])) : null;
+}
+// Fetch a single subject by its code
+function getSubjectByCode($subject_code) {
+    $conn = dbConnect(); // Connect to the database
+    $query = "SELECT * FROM subjects WHERE subject_code = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $subject_code);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $subject = $result->fetch_assoc();
+    $stmt->close();
+    $conn->close();
+
+    return $subject; // Return the subject or null if not found
+}
+
+// Delete a subject by its code
+function deleteSubject($subject_code, $redirect) {
+    $conn = dbConnect(); // Connect to the database
+    $query = "DELETE FROM subjects WHERE subject_code = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $subject_code);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        $stmt->close();
+        $conn->close();
+        // Redirect to the provided page after deletion
+        header("Location: $redirect");
+        exit;
+    } else {
+        $stmt->close();
+        $conn->close();
+        echo "<p class='text-danger'>Failed to delete the subject. Please try again.</p>";
+    }
+}
+
+
+// Update a subject in the database
+function updateSubject($subject_code, $subject_name, $redirect) {
+    $conn = dbConnect(); // Database connection
+    $query = "UPDATE subjects SET subject_name = ? WHERE subject_code = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $subject_name, $subject_code);
+    $stmt->execute();
+
+    if ($stmt->affected_rows > 0) {
+        // Redirect on success
+        $stmt->close();
+        $conn->close();
+        header("Location: $redirect");
+        exit;
+    } else {
+        // Handle failure
+        $stmt->close();
+        $conn->close();
+        echo "<p class='text-danger'>Failed to update the subject. Please try again.</p>";
+    }
+}
+function updateSubjectGrade($student_id, $subject_id, $grade, $redirect_url) {
+    $conn = dbConnect();
+    
+    // Prepare the SQL query to update the grade
+    $query = "UPDATE grades SET grade = ? WHERE student_id = ? AND subject_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("dii", $grade, $student_id, $subject_id); // "d" for double, "ii" for integers
+    $stmt->execute();
+    
+    if ($stmt->affected_rows > 0) {
+        // Redirect after successful update
+        header("Location: $redirect_url");
+        exit;
+    } else {
+        // Handle errors (e.g., if no rows were affected)
+        echo "<p class='text-danger'>Failed to assign grade. Please try again.</p>";
+    }
+    
+    $stmt->close();
+    $conn->close();
+}
+function getStudentById($student_id) {
+    $conn = dbConnect();  // Establish a database connection
+    
+    // Query to fetch student details by student_id
+    $query = "SELECT * FROM students WHERE student_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("i", $student_id);  // "i" is for integer type
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        return $result->fetch_assoc();  // Return student data as an associative array
+    } else {
+        return null;  // Return null if no student found
+    }
+
+    $stmt->close();
+    $conn->close();
+}
+
+
+
+
+
+
+
+
 
 
