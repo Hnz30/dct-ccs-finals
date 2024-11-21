@@ -152,7 +152,8 @@ $conn->close();
                                     <a href="delete.php?index=<?php echo $index; ?>" class="btn btn-danger btn-sm">Delete</a>
 
                                     <!-- Attach Subject -->
-                                    <a href="attach-subject.php?index=<?php echo $index; ?>" class="btn btn-warning btn-sm">Attach Subject</a>
+                                    <a href="attach-subject.php?student_id=<?php echo urlencode($student['student_id']); ?>" class="btn btn-warning btn-sm">Attach Subject</a>
+
                                 </td>
                             </tr>
                         <?php endforeach; ?>

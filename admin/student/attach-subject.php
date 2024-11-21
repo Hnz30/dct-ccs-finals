@@ -26,7 +26,6 @@ if (isset($_GET['student_id'])) {
 ?>
 
 <div class="col-md-9 col-lg-10">
-
     <h3 class="text-left mb-5 mt-5">Attach Subject to Student</h3>
 
     <!-- Breadcrumb Navigation -->
@@ -41,27 +40,37 @@ if (isset($_GET['student_id'])) {
     <!-- Form Handling -->
     <?php
     if (isPost()) {
-        // Check if any subjects were selected
+    // Check if any subjects were selected
         if (isset($_POST['subjects']) && !empty($_POST['subjects'])) {
-            $subjects = $_POST['subjects'];  
-            assignSubjectsToStudent($student_data['student_id'], $subjects); // Assign subjects to student
+        $subjects = $_POST['subjects'];
+        
+        // Assign subjects to student and check for success
+        $result = assignSubjectsToStudent($student_data['student_id'], $subjects);
+        
+        if ($result) {
+            echo displayMessage("Subjects successfully assigned to the student!");
         } else {
-            echo displayErrors(["No subjects selected."]);
+            echo displayErrors(["Failed to assign subjects. Please try again."]);
         }
+    } else {
+        echo displayErrors(["No subjects selected."]);
     }
-    ?>
+}
+?>
+
 
     <div class="border p-5">
         <!-- Display Selected Student Information -->
         <h4 class="text-left mb-2 mt-5">Selected Student Information</h4>
         <ul class="text-left">
             <li><strong>Student ID:</strong> <?= htmlspecialchars($student_data['student_id']) ?></li>
-            <li><strong>Name:</strong> <?= htmlspecialchars($student_data['first_name']) .' '. htmlspecialchars($student_data['last_name'])  ?></li>
+            <li><strong>Name:</strong> <?= htmlspecialchars($student_data['first_name']) .' '. htmlspecialchars($student_data['last_name']) ?></li>
         </ul>
         <hr>
 
         <!-- Subject Selection Form -->
         <form method="POST" class="text-left">
+            <h5>Select Subjects:</h5>
             <?php
                 // Display checkboxes for all available subjects
                 echo getAllSubjectsCheckboxes($student_data['student_id']);
@@ -89,15 +98,19 @@ if (isset($_GET['student_id'])) {
             if (!empty($assignedSubjects)): ?>
                 <?php foreach ($assignedSubjects as $subject): ?>
                     <tr>
-                        <td><?= htmlspecialchars($subject['subject_id']) ?></td>
+                        <td><?= htmlspecialchars($subject['subject_code']) ?></td>
                         <td><?= htmlspecialchars($subject['subject_name']) ?></td>
                         <td><?= htmlspecialchars($subject['grade']) ?></td>
                         <td>
-                            <!-- Detach Subject Button -->
-                            <a href="detach-subject.php?subject_id=<?= urlencode($subject['subject_id']) ?>&student_id=<?= $student_data['student_id'] ?>" class="btn btn-danger btn-sm">Detach Subject</a>
+                        <?php
+                            // Ensure that subject_id and student_id are set and valid before using them
+                            $subject_id = isset($subject['subject_id']) ? urlencode($subject['subject_id']) : '';
+                            $student_id = isset($student_data['student_id']) ? urlencode($student_data['student_id']) : '';
+                            ?>
 
-                            <!-- Assign Grade Button -->
-                            <a href="assign-grade.php?subject_id=<?= urlencode($subject['subject_id']) ?>&student_id=<?= $student_data['student_id'] ?>" class="btn btn-success btn-sm">Assign Grade</a>
+                            <a href="dettach-subject.php?subject_id=<?= isset($subject['subject_id']) ? urlencode($subject['subject_id']) : '' ?>&student_id=<?= isset($student_data['student_id']) ? urlencode($student_data['student_id']) : '' ?>" class="btn btn-danger btn-sm">Dettach Subject</a>
+                            <a href="assign-grade.php?subject_id=<?= $subject_id ?>&student_id=<?= $student_id ?>" class="btn btn-success btn-sm">Assign Grade</a>
+
                         </td>
                     </tr>
                 <?php endforeach; ?>
