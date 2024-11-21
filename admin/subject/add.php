@@ -56,7 +56,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
-    <h1 class="h2">Add a New Subject</h1>        
+    <h1 class="h2">Add a New Subject</h1>
+    <div class="w-100 mt-1">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Add a New Subject</li>
+        </ol>
+    </nav>
+</div>
+        
 
     <?php if (isset($success_message)) echo "<div class='alert alert-success'>$success_message</div>"; ?>
     <?php if (isset($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>

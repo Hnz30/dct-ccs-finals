@@ -185,5 +185,45 @@ function displayErrors($errors) {
     $errorHtml .= '</ul></div>';
     return $errorHtml;
 }
+function renderBreadcrumbs($breadcrumbs) {
+    $lastIndex = count($breadcrumbs) - 1;
+    echo '<nav aria-label="breadcrumb"><ol class="breadcrumb mb-0">';
+    foreach ($breadcrumbs as $index => $breadcrumb) {
+        if ($index === $lastIndex) {
+            echo '<li class="breadcrumb-item active" aria-current="page">' . htmlspecialchars($breadcrumb['label']) . '</li>';
+        } else {
+            echo '<li class="breadcrumb-item"><a href="' . htmlspecialchars($breadcrumb['link']) . '">' . htmlspecialchars($breadcrumb['label']) . '</a></li>';
+        }
+    }
+    echo '</ol></nav>';
+}
+function authenticateUser($email, $password) {
+    $conn = dbConnect(); // Connect to the database
+
+    // Hash the password for matching
+    $hashedPassword = md5($password); 
+
+    // Query to check user credentials
+    $query = "SELECT * FROM users WHERE email = ? AND password = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $email, $hashedPassword);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // If user exists, return user data
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $stmt->close();
+        $conn->close();
+        return $user; // Return user data
+    }
+
+    // If no user is found, return false
+    $stmt->close();
+    $conn->close();
+    return false;
+}
+
+
 
 ?>

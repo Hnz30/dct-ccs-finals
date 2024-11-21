@@ -86,7 +86,17 @@ $conn->close();
     }
     ?>
    
-    <h1 class="h2">Register a New Student</h1>        
+    <h1 class="h2">Register a New Student</h1>
+    <div class="w-100 mt-1">
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Register Students</li>
+        </ol>
+    </nav>
+</div>
+
+ 
     
     <div class="row mt-5">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">

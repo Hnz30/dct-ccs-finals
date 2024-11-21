@@ -62,25 +62,19 @@ ob_end_flush(); // Flush the output buffer to the browser
 
 <?php include '../partials/header.php'; // Include header ?>
 <?php include '../partials/side-bar.php'; // Include sidebar ?>
-<div class="col-md-9 col-lg-10">
 
-<h3 class="text-left mb-5 mt-5">Delete a Student</h3>
-
-    <!-- Breadcrumbs Section -->
-    <div class="w-100 mt-1">
-        <div class="border border-secondary-1 p-10 mb-1">
-            <nav aria-label="breadcrumb">
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5"> 
+<h2>Delete a Student</h2>
+        <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="register.php">Register Students</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Delete Student</li>
                 </ol>
             </nav>
-        </div>
-    </div>
+        <div class="w-100 mt-3">
     
     <!-- Delete Student Form -->
-    <div class="row mt-5">
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
             <div class="mb-2">
                 <label class="form-label fs-5">Are you sure you want to delete the following student record?</label> 
@@ -97,7 +91,6 @@ ob_end_flush(); // Flush the output buffer to the browser
                 </div>  
             </div>
         </form>
-    </div>    
 </main>
 
 <?php include '../partials/footer.php'; // Include footer ?>
