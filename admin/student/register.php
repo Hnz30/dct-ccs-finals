@@ -70,6 +70,7 @@ $_SESSION['student_data'] = $students;
 $conn->close();
 
 ?>
+
 <!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5"> 
     <?php 
@@ -91,22 +92,22 @@ $conn->close();
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
             <!-- Floating Label for Student ID -->
             <div class="form-floating mb-3">
-                <input type="text" class="form-control" id="student_id" name="student_id" 
-                       placeholder="Student ID" value="<?php echo htmlspecialchars($student_data['student_id'] ?? ''); ?>">
+                <input type="number" class="form-control" id="student_id" name="student_id" 
+                       placeholder="Student ID" value="<?php echo htmlspecialchars($student_data['student_id'] ?? ''); ?>" >
                 <label for="student_id">Student ID</label>
             </div>
 
             <!-- Floating Label for First Name -->
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="first_name" name="first_name" 
-                       placeholder="First Name" value="<?php echo htmlspecialchars($student_data['first_name'] ?? ''); ?>">
+                       placeholder="First Name" value="<?php echo htmlspecialchars($student_data['first_name'] ?? ''); ?>" >
                 <label for="first_name">First Name</label>
             </div>
 
             <!-- Floating Label for Last Name -->
             <div class="form-floating mb-3">
                 <input type="text" class="form-control" id="last_name" name="last_name" 
-                       placeholder="Last Name" value="<?php echo htmlspecialchars($student_data['last_name'] ?? ''); ?>">
+                       placeholder="Last Name" value="<?php echo htmlspecialchars($student_data['last_name'] ?? ''); ?>" >
                 <label for="last_name">Last Name</label>
             </div>
 
@@ -151,10 +152,8 @@ $conn->close();
                         </tr>
                     <?php endif; ?>
                 </tbody>
-
             </table>
         </div>
-
     </div>    
 </main>
 

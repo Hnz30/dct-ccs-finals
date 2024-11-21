@@ -19,19 +19,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Validate form inputs
     if ($subject_code && $subject_name) {
-        // Insert the subject into the database
+        // Check if subject code already exists
         $conn = dbConnect();
-        $query = "INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)";
+        $query = "SELECT COUNT(*) AS count FROM subjects WHERE subject_code = ?";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("ss", $subject_code, $subject_name);
+        $stmt->bind_param("s", $subject_code);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
 
-        if ($stmt->execute()) {
-            $success_message = "Subject added successfully!";
+        // If subject code already exists
+        if ($row['count'] > 0) {
+            $error_message = "Subject Code already exists. Please choose a different code.";
         } else {
-            $error_message = "Failed to add subject.";
+            // Insert the subject into the database
+            $query = "INSERT INTO subjects (subject_code, subject_name) VALUES (?, ?)";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ss", $subject_code, $subject_name);
+
+            if ($stmt->execute()) {
+                $success_message = "Subject added successfully!";
+            } else {
+                $error_message = "Failed to add subject.";
+            }
+
+            $stmt->close();
         }
         
-        $stmt->close();
         $conn->close();
     } else {
         $error_message = "Please fill in both fields.";
@@ -50,13 +65,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
             <!-- Floating Label for Subject Code -->
             <div class="form-floating mb-3">
-                <input type="text" class="form-control bg-light" id="subject_code" name="subject_code" placeholder="Subject Code" required>
+                <input type="number" class="form-control bg-light" id="subject_code" name="subject_code" placeholder="Subject Code" >
                 <label for="subject_code">Subject Code</label>
             </div>
 
             <!-- Floating Label for Subject Name -->
             <div class="form-floating mb-3">
-                <input type="text" class="form-control bg-light" id="subject_name" name="subject_name" placeholder="Subject Name" required>
+                <input type="text" class="form-control bg-light" id="subject_name" name="subject_name" placeholder="Subject Name" >
                 <label for="subject_name">Subject Name</label>
             </div>
 
@@ -93,9 +108,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </td>
                         </tr>
                     <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
+        </div>
     </div>    
 </main>
 

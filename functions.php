@@ -1,43 +1,39 @@
-<?php       
+<?php
 // All project functions should be placed here
 
+// Database connection function
 function dbConnect() {
-$host = 'localhost';
-$user = 'root';
-$password = '';
-$dbname = 'dct-ccs-finals';
+    $host = 'localhost';
+    $user = 'root';
+    $password = '';
+    $dbname = 'dct-ccs-finals';
 
-$conn = new mysqli($host, $user, $password, $dbname);
+    $conn = new mysqli($host, $user, $password, $dbname);
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    return $conn;
 }
 
-return $conn;
+// Function to check if the request is a POST request
+function isPost() {
+    return $_SERVER['REQUEST_METHOD'] === 'POST';
 }
-
-
-?>
-
-
-
-<?php
 
 // Function to validate student data
 function validateStudentData($data) {
     $errors = [];
 
-    // Validate student ID (must be numeric and not empty)
     if (empty($data['student_id']) || !is_numeric($data['student_id'])) {
         $errors[] = "Student ID must be a valid number.";
     }
 
-    // Validate first name (must not be empty)
     if (empty($data['first_name'])) {
         $errors[] = "First name is required.";
     }
 
-    // Validate last name (must not be empty)
     if (empty($data['last_name'])) {
         $errors[] = "Last name is required.";
     }
@@ -45,66 +41,48 @@ function validateStudentData($data) {
     return $errors;
 }
 
+// Function to check for duplicate student data
+// Function to check if student_id already exists in the database
 function checkDuplicateStudentData($student_id, $conn) {
-    // Ensure student_id is a string
-    if (!is_string($student_id)) {
-        return ["Invalid Student ID format."];
-    }
-
-    // Query to check if student_id already exists
+    $errors = [];
     $query = "SELECT COUNT(*) AS count FROM students WHERE student_id = ?";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $student_id);
+    $stmt->bind_param("i", $student_id);
     $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    if ($count > 0) {
+        $errors[] = "Student ID already exists. Please choose a different ID.";
+    }
+    $stmt->close();
+    return $errors;
+}
+
+
+// Fetch a student by student_id
+function getStudentById($student_id) {
+    $conn = dbConnect(); 
+    
+    $query = "SELECT * FROM students WHERE student_id = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $student_id);  // Changed from "i" to "s" for string type
+    $stmt->execute();
+    
     $result = $stmt->get_result();
     
-    // Fetch the count
-    $row = $result->fetch_assoc();
+    if ($result->num_rows > 0) {
+        return $result->fetch_assoc();
+    } else {
+        return null;
+    }
+
     $stmt->close();
-
-    // Return an error if a duplicate is found
-    if ($row['count'] > 0) {
-        return ["Student ID already exists in the database."];
-    }
-
-    return []; // No errors
+    $conn->close();
 }
 
-// Update student data
-function updateStudentData($index, $student_data) {
-    // Check if the student data is valid (you can add further validation here if needed)
-    if (isset($_SESSION['student_data'][$index])) {
-        // Update student data in the session
-        $_SESSION['student_data'][$index] = $student_data;
-        return true;
-    }
-    return false;  // Return false if the student data was not found
-}
-// Function to get student data by student_id or index from session
-function getSelectedStudentData($index) {
-    if (isset($_SESSION['student_data'][$index])) {
-        return $_SESSION['student_data'][$index];
-    }
-    return null;  // Return null if student is not found
-}
-// Function to display errors
-function displayErrors($errors) {
-    $errorHtml = '<div class="alert alert-danger">';
-    $errorHtml .= '<ul>';
-    foreach ($errors as $error) {
-        $errorHtml .= '<li>' . htmlspecialchars($error) . '</li>';
-    }
-    $errorHtml .= '</ul>';
-    $errorHtml .= '</div>';
-    return $errorHtml;
-}
-// Check if the request method is POST
-function isPost() {
-    return $_SERVER['REQUEST_METHOD'] === 'POST';
-}
 // Fetch all subjects from the database
 function fetchSubjects() {
-    $conn = dbConnect(); // Use your database connection function
+    $conn = dbConnect();
     $subjects = [];
     $result = $conn->query("SELECT * FROM subjects");
 
@@ -117,13 +95,15 @@ function fetchSubjects() {
     $conn->close();
     return $subjects;
 }
+
 // Retrieve and sanitize POST data
 function postData($key) {
     return isset($_POST[$key]) ? htmlspecialchars(trim($_POST[$key])) : null;
 }
+
 // Fetch a single subject by its code
 function getSubjectByCode($subject_code) {
-    $conn = dbConnect(); // Connect to the database
+    $conn = dbConnect();
     $query = "SELECT * FROM subjects WHERE subject_code = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $subject_code);
@@ -133,12 +113,12 @@ function getSubjectByCode($subject_code) {
     $stmt->close();
     $conn->close();
 
-    return $subject; // Return the subject or null if not found
+    return $subject;
 }
 
 // Delete a subject by its code
 function deleteSubject($subject_code, $redirect) {
-    $conn = dbConnect(); // Connect to the database
+    $conn = dbConnect();
     $query = "DELETE FROM subjects WHERE subject_code = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $subject_code);
@@ -147,7 +127,6 @@ function deleteSubject($subject_code, $redirect) {
     if ($stmt->affected_rows > 0) {
         $stmt->close();
         $conn->close();
-        // Redirect to the provided page after deletion
         header("Location: $redirect");
         exit;
     } else {
@@ -157,76 +136,54 @@ function deleteSubject($subject_code, $redirect) {
     }
 }
 
-
 // Update a subject in the database
 function updateSubject($subject_code, $subject_name, $redirect) {
-    $conn = dbConnect(); // Database connection
+    $conn = dbConnect();
     $query = "UPDATE subjects SET subject_name = ? WHERE subject_code = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("ss", $subject_name, $subject_code);
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
-        // Redirect on success
         $stmt->close();
         $conn->close();
         header("Location: $redirect");
         exit;
     } else {
-        // Handle failure
         $stmt->close();
         $conn->close();
         echo "<p class='text-danger'>Failed to update the subject. Please try again.</p>";
     }
 }
+
+// Update subject grade for a student
 function updateSubjectGrade($student_id, $subject_id, $grade, $redirect_url) {
     $conn = dbConnect();
     
     // Prepare the SQL query to update the grade
-    $query = "UPDATE grades SET grade = ? WHERE student_id = ? AND subject_id = ?";
+    $query = "UPDATE students_subjects SET grade = ? WHERE student_id = ? AND subject_id = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("dii", $grade, $student_id, $subject_id); // "d" for double, "ii" for integers
     $stmt->execute();
     
     if ($stmt->affected_rows > 0) {
-        // Redirect after successful update
         header("Location: $redirect_url");
         exit;
     } else {
-        // Handle errors (e.g., if no rows were affected)
         echo "<p class='text-danger'>Failed to assign grade. Please try again.</p>";
     }
     
     $stmt->close();
     $conn->close();
 }
-function getStudentById($student_id) {
-    $conn = dbConnect();  // Establish a database connection
-    
-    // Query to fetch student details by student_id
-    $query = "SELECT * FROM students WHERE student_id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $student_id);  // "i" is for integer type
-    $stmt->execute();
-    
-    $result = $stmt->get_result();
-    
-    if ($result->num_rows > 0) {
-        return $result->fetch_assoc();  // Return student data as an associative array
-    } else {
-        return null;  // Return null if no student found
+// Function to display error messages
+function displayErrors($errors) {
+    $errorHtml = '<div class="alert alert-danger"><ul>';
+    foreach ($errors as $error) {
+        $errorHtml .= '<li>' . htmlspecialchars($error) . '</li>';
     }
-
-    $stmt->close();
-    $conn->close();
+    $errorHtml .= '</ul></div>';
+    return $errorHtml;
 }
 
-
-
-
-
-
-
-
-
-
+?>
