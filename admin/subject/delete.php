@@ -34,38 +34,40 @@ if (isset($_GET['subject_code']) && !empty($_GET['subject_code'])) {
 ?>
 
 <div class="col-md-9 col-lg-10">
-    <h3 class="text-left mb-5 mt-5">Delete Subject</h3>
+    <h3 class="text-left mb-4 mt-5">Delete Subject</h3>
 
     <!-- Breadcrumb Navigation -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="add.php">Add subject</a></li>
+            <li class="breadcrumb-item"><a href="./add.php">Add Subject</a></li>
             <li class="breadcrumb-item active" aria-current="page">Delete Subject</li>
         </ol>
     </nav>
 
-    <!-- Display error message if there's an issue -->
-    <?php if (isset($error)): ?>
-        <div class="alert alert-danger">
-            <?= htmlspecialchars($error) ?>
-        </div>
-    <?php endif; ?>
+    <div class="card p-4">
+        <!-- Display error message if there's an issue -->
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger">
+                <?= htmlspecialchars($error) ?>
+            </div>
+        <?php endif; ?>
 
-    <?php if (isset($subject_data)): ?>
-        <!-- Confirmation Message -->
-        <p class="text-left">Are you sure you want to delete the following subject record?</p>
-        <ul class="text-left">
-            <li><strong>Subject Code:</strong> <?= htmlspecialchars($subject_data['subject_code']) ?></li>
-            <li><strong>Subject Name:</strong> <?= htmlspecialchars($subject_data['subject_name']) ?></li>
-        </ul>
+        <?php if (isset($subject_data)): ?>
+            <!-- Confirmation Message -->
+            <p class="mb-4">Are you sure you want to delete the following subject record?</p>
+            <ul class="mb-4">
+                <li><strong>Subject Code:</strong> <?= htmlspecialchars($subject_data['subject_code']) ?></li>
+                <li><strong>Subject Name:</strong> <?= htmlspecialchars($subject_data['subject_name']) ?></li>
+            </ul>
 
-        <!-- Confirmation Form -->
-        <form method="POST" class="text-left">
-            <a href="add.php" class="btn btn-secondary">Cancel</a>
-            <button type="submit" class="btn btn-primary">Delete Subject Record</button>
-        </form>
-    <?php endif; ?>
+            <!-- Confirmation Form -->
+            <form method="POST" class="d-flex gap-2">
+                <a href="add.php" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Delete Subject Record</button>
+            </form>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php

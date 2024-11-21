@@ -58,20 +58,17 @@ ob_end_flush(); // Flush the output buffer to the browser
 ?>
 
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5"> 
-    <h2 class="m-4">Edit Student</h2>
+    <h2>Edit Student</h2>
 
-        <!-- Breadcrumbs Section -->
-        <div class="w-100 mt-1">
-        <div class="border border-secondary-1 p-10 mb-1">
-            <nav aria-label="breadcrumb">
+        <nav aria-label="breadcrumb">
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="../dashboard.php">Dashboard</a></li>
                     <li class="breadcrumb-item"><a href="register.php">Register Students</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Delete Student</li>
                 </ol>
             </nav>
-        </div>
-    </div>
+        <div class="w-100 mt-3">
+
 
     <form method="POST" action="" class="border border-secondary-1 p-5 mb-4">
         <div class="mb-3">
