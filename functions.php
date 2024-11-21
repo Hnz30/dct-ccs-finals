@@ -398,9 +398,8 @@ function detachSubjectsFromStudent($student_id, $subjects) {
     return $affectedRows > 0;
 }
 // Function to get data from the database based on the field and key
-// Function to get data from the database based on the field and key
 function GETdata($conn, $key) {
-    // Check if we are retrieving student data
+    // Fetch student data
     if ($key == 'student_id' || $key == 'firstname' || $key == 'lastname') {
         $student_id = $_GET['student_id'];
         $sql = "SELECT student_id, first_name, last_name FROM students WHERE student_id = ?";
@@ -418,9 +417,8 @@ function GETdata($conn, $key) {
             return $student['last_name'] ?? 'N/A';
         }
     }
-    // Check if we are retrieving subject data
+    // Fetch subject data
     elseif ($key == 'subject_id' || $key == 'subject_name') {
-        // Ensure that subject_id is passed
         if (isset($_GET['subject_id'])) {
             $subject_id = $_GET['subject_id'];
             $sql = "SELECT subject_code, subject_name FROM subjects WHERE id = ?";
@@ -436,12 +434,10 @@ function GETdata($conn, $key) {
                 return $subject['subject_name'] ?? 'N/A';
             }
         }
-        return 'N/A'; // Default return if subject_id is not passed
+        return 'N/A'; // Return 'N/A' if subject_id is not found or not passed
     }
-    return 'N/A'; // Default return if no matching key
+    return 'N/A'; // Default return for unsupported keys
 }
-
-
 
 
 // In your functions.php or a separate file (e.g., db.php)
@@ -457,21 +453,6 @@ $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

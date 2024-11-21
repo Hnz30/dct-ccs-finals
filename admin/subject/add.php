@@ -13,8 +13,8 @@ include '../partials/side-bar.php';
 
 // Handle the form submission to add a new subject
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Get form data
-    $subject_code = postData('subject_code'); // Sanitize input data
+    // Sanitize input data
+    $subject_code = postData('subject_code'); 
     $subject_name = postData('subject_name');
 
     // Validate form inputs
@@ -52,9 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Please fill in both fields.";
     }
 }
+
+
 ?>
 
-<!-- Template Files here -->
 <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-5">    
     <h1 class="h2">Add a New Subject</h1>
     <div class="w-100 mt-1">
@@ -66,7 +67,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </nav>
 </div>
         
-
     <?php if (isset($success_message)) echo "<div class='alert alert-success'>$success_message</div>"; ?>
     <?php if (isset($error_message)) echo "<div class='alert alert-danger'>$error_message</div>"; ?>
 
